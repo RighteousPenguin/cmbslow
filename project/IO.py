@@ -32,13 +32,17 @@ def C_l(l, om_m=0.3, om_b=0.04, h=0.7, sep_cont=False):
     def P(xell, xom_m, xh):
         return m.log((xom_m ** (-0.09) * xell / 200) / m.sqrt(xom_m * xh ** 2))
 
-    def Tp(xell, x):  # only for 200<ell<1000
-        # return 0.75 - 0.25*(P(ell) + m.log(x))  # less precise
-        return 1 / 4 * m.log(14 / (kneq * x * xell))  # more precise
+    def Tp(xell, x):
+        if xell > 199:
+            return 0.74 - 0.25*(P(xell, om_m, h) + m.log(x))
+        else:
+            return 1 / 4 * m.log(14 / (kneq * x * xell))
 
-    def To(xell, x):  # only for 200<ell<1000
-        # return 0.5 + 0.36*(P(ell)) + m.log(x)  # less precise
-        return 0.36 * m.log(5.6 * kneq * x * xell)  # more precise
+    def To(xell, x):
+        if xell > 199:
+            return 0.5 + 0.36*(P(xell, om_m, h) + m.log(x))
+        else:
+            return 0.36 * m.log(5.6 * kneq * x * xell)
 
     def A1(xell):
         # return 0.1*xi*((P(ell)-0.78)**2-0.43)/(1+xi)**(1/4)*m.exp(ell**2/2*(1/l_s**2 - 1/l_f**2))  # less precise
