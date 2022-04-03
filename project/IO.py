@@ -1,48 +1,68 @@
 import numpy as np
 import math as m
 
+# assumes ΛCMD model parameters per default
+h_def = 0.6774
+om_b_def = 0.0223/h_def**2
+om_m_def = 0.3089
 
-def C_l(l, om_m=0.3, om_b=0.04, h=0.7, sep_cont=False):
+
+def C_l(l, om_m=om_m_def, om_b=om_b_def, h=h_def, sep_cont=False):
 
     # needed functions
     def get_params(xom_m, xom_b, xh):
+        # parameters to manually fix frequency and amplitude, found by trial and error
+        f_fix = 1.2
+        a_fix = 0.6
+
         xxi = 17 * xom_b * xh ** 2
         # zrzeq = 7.8*10**(-2)/(om_m*h**2)  # paper
         zrzeq = 1 / 12.8 / (xom_m * xh ** 2)  # slightly more precise
-        zr = xom_m ** (-0.18) / zrzeq * (m.sqrt(1 + 1 / zrzeq) - 1) ** (-2)
+        zr = 1050  # redshift at recombination # xom_m ** (-0.18) / zrzeq * (m.sqrt(1 + 1 / zrzeq) - 1) ** (-2)
         xkneq = 0.72 / m.sqrt(xom_m * xh ** 2) * xom_m ** (-0.09) / 200  # *l*x
         xl_f = 1530 * m.sqrt(1 + zrzeq) * xom_m ** 0.09
         xl_s = 0.7 * xl_f * ((1 + 0.56 * xxi) / (1 + xxi) + 0.8 / (xxi * (1 + xxi)) * m.sqrt(xom_m * xh ** 2) / (
                 1 + (1 + 1 / zrzeq) ** (-1 / 2)) ** 2) ** (-1 / 2)
-        # rho = 0.014*om_m**0.16*h**(3.1*0.16)/(1+0.13*xi) # paper
-        rho1 = 0.014 * xom_m ** 0.16 * m.sqrt(xh) / (1 + 0.13 * xxi)  # slightly more precise
-        rho2 = xom_m ** (-0.09) / m.sqrt(3 * zr * xxi) * m.log(
+        rho1 = 0.014*xom_m**0.16*xh**(3.1*0.16)/(1+0.13*xxi)  # paper
+        rho2 = 0.014 * xom_m ** 0.16 * m.sqrt(xh) / (1 + 0.13 * xxi)  # slightly more precise
+        rho3 = xom_m ** (-0.09) / m.sqrt(3 * zr * xxi) * m.log(
             (m.sqrt(xxi * (1 + zrzeq)) + m.sqrt(1 + xxi)) / (1 + m.sqrt(xxi * zrzeq)))  # even more precise
-        xrho = rho1
+        xrho = rho3 * f_fix
 
         # speed of sound and integral prefactors
         xcs = 1 / m.sqrt(3 * (1 + xxi))
         xc1 = (1 - 1 / (3 * xcs ** 2)) ** 2
         xc2 = xcs / 2
         xc3 = 9 * xcs ** 3 / 2
-        return xxi, xkneq, xl_f, xl_s, xrho, xcs, xc1, xc2, xc3
+        return xxi, xkneq, xl_f, xl_s, xrho, xcs, xc1, xc2, xc3, a_fix
 
-    [xi, kneq, l_f, l_s, rho, cs, c1, c2, c3] = get_params(om_m, om_b, h)
+    [xi, kneq, l_f, l_s, rho, cs, c1, c2, c3, a_fix] = get_params(om_m, om_b, h)
 
     def P(xell, xom_m, xh):
-        return m.log((xom_m ** (-0.09) * xell / 200) / m.sqrt(xom_m * xh ** 2))
+        return m.log(xom_m ** (-0.09) * xell / 200 / m.sqrt(xom_m * xh ** 2))
 
     def Tp(xell, x):
-        if xell > 199:
+        if xell < 200:
+            return 9/10
+        elif 200 <= xell <= 1000:
             return 0.74 - 0.25*(P(xell, om_m, h) + m.log(x))
-        else:
-            return 1 / 4 * m.log(14 / (kneq * x * xell))
+        else:  # greater than 1000
+            ret = 1 / 4 * m.log(14 / (kneq * x * xell))
+            # comp = m.log(0.15 * kneq * x * xell)/(0.27 * kneq * x * xell)**2
+            # print(f'Tp diff = {(ret - comp)/ret}')
+            return ret
 
     def To(xell, x):
-        if xell > 199:
+        if xell < 200:
+            return 9/10*3**(-3/4)
+        elif 200 <= xell <= 1000:
             return 0.5 + 0.36*(P(xell, om_m, h) + m.log(x))
-        else:
-            return 0.36 * m.log(5.6 * kneq * x * xell)
+        else:  # greater than 1000
+            ret = 0.36 * m.log(5.6 * kneq * x * xell)
+            # comp = 1/2 * 3**(5/4)
+            # print(f'To diff = {(ret - comp)/ret}')
+            # print(f'To return = {ret}')
+            return ret
 
     def A1(xell):
         # return 0.1*xi*((P(ell)-0.78)**2-0.43)/(1+xi)**(1/4)*m.exp(ell**2/2*(1/l_s**2 - 1/l_f**2))  # less precise
@@ -96,8 +116,8 @@ def C_l(l, om_m=0.3, om_b=0.04, h=0.7, sep_cont=False):
     resultO = np.zeros_like(l)
     resultN = np.zeros_like(l)
     for n, ell in enumerate(l):
-        resultO[n] = 100/9*(O(ell))
-        resultN[n] = 100/9*(N1(ell, om_m, h) + N2(ell, om_m, h) + N3(ell, om_m, h))
+        resultO[n] = 100/9*(O(ell)) * a_fix
+        resultN[n] = 100/9*(N1(ell, om_m, h) + N2(ell, om_m, h) + N3(ell, om_m, h))*a_fix
 
     if not sep_cont:
         return resultO + resultN
