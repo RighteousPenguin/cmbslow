@@ -49,7 +49,7 @@ var_param = 'h'  # variation of h
 ````
 Now call the animation function
 ````python
-animate_sweep(minl, maxl, LCDM, var_param,  var_range)
+animate_sweep(lmin, lmax, LCDM, var_param,  var_range)
 ````
 
 # Authors
