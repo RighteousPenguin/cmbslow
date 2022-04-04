@@ -6,12 +6,14 @@ h = 0.7
 om_m = 0.3
 om_b = 0.04
 
-lmax = 1500
-L = np.linspace(160, lmax, lmax-159)
+lmax = 1200
+lmin = 10
+L = np.linspace(lmin, lmax, lmax-lmin+1)
 rO, rN = C_l(L, sep_cont=True)
 
-Is = np.zeros(1400-159)
-ls = np.linspace(160, lmax-159, lmax-159)
+Is = np.zeros(lmax-lmin+1)
+ls = np.linspace(lmin, lmax, lmax-lmin+1)
+# print(ls)
 # N1s = [N1(_) + N2(_) + N3(_) for _ in ls]
 # A1s = [A1(_) for _ in ls]
 # A2s = [A2(_) for _ in ls]
@@ -27,6 +29,11 @@ ls = np.linspace(160, lmax-159, lmax-159)
 # plt.plot(ls, N1s)
 # plt.xlim([180, 220])
 
+
+# value comparison
+# print(m.sqrt(om_m*h**2)*om_m**0.09*200/0.72)
+
+
 plt.plot(L, rO, label='Oscillating contribution')
 plt.plot(L, rN, label='Non-oscillating contribution')
 plt.plot(L, [a + b for a, b in zip(rO, rN)], label='result')
@@ -35,8 +42,8 @@ plt.plot(L, [a + b for a, b in zip(rO, rN)], label='result')
 # plt.plot(L, O1s, label='O1')
 # plt.plot(L, O2s, label='O2')
 # plt.plot(L, [a + b for a, b in zip(O1s, O2s)], label='O1+O2')
-plt.xlabel('$l$')
-plt.ylabel(r'$\frac{l(l+1)C_l}{(L(l+1)Cl)_{l<30}}$')
+plt.xlabel(r'$\ell$')
+plt.ylabel(r'$\frac{\ell(\ell+1)C_\ell}{(\ell(\ell+1)C_\ell)_{\ell<30}}$')
 plt.grid()
 plt.legend()
 plt.show()
