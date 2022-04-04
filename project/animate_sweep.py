@@ -1,9 +1,9 @@
 from IO import *
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+from matplotlib.animation import FuncAnimation as fa
 
 
-def animate_sweep(l, params, sweepvar, paramrange, lmin=140, lmax=1400):
+def animate_sweep(l, params, sweepvar, paramrange, lmin=180, lmax=1200):
 
     if sweepvar == 'om_m':
         om_b, h = params
@@ -45,7 +45,7 @@ def animate_sweep(l, params, sweepvar, paramrange, lmin=140, lmax=1400):
         plt.title(f'{var_latex} = {np.round(frame,2)}')
         return ln,
 
-    movie = FuncAnimation(fig, update, frames=paramrange, init_func=init, blit=False)
+    movie = fa(fig, update, frames=paramrange, init_func=init, blit=False)
     plt.show()
     return None
 
