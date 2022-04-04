@@ -15,7 +15,7 @@ from IO import *
 import numpy as np
 import matplotlib.pyplot as plt
 ```
-Set parameters, e.g. for the $$\Lambda$$CDM model
+Set parameters, e.g. for the $$\Lambda \text{CDM}$$ model
 ```python
 om_m = 0.3089
 om_b = 0.0486
@@ -37,7 +37,7 @@ plt.show()
 * Felix Dusel (felix.dusel@stud-mail.uni-wuerzburg.de)
 
 This project has been developed for:
-Poster Project, Cosmology ASTR407, lectured by Doulas Scott 
+Poster Project, Cosmology ASTR407, lectured by Doulas Scott.  
 University of British Columbia, Vancouver, Canada
 
 
