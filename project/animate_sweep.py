@@ -17,7 +17,7 @@ def animate_sweep(lmin, lmax, params, sweepvar, paramrange):
         print('Invalid sweep variable! Please choose either om_m, om_b, or h.')
         return None
 
-    l = np.linspace(minl, maxl, lmax - lmin + 1)
+    l = np.linspace(lmin, lmax, lmax - lmin + 1)
     fig, ax = plt.subplots()
     ln, = plt.plot([], [])
     # ln2, = plt.plot([], [])  # add option sep_cont
@@ -43,6 +43,7 @@ def animate_sweep(lmin, lmax, params, sweepvar, paramrange):
         # ln.set_data(xdata, [ydata1 + ydata2 if not sep_cont else [ydata1, ydata2]])
         ln.set_data(xdata, ydata)  # temporary solution
         plt.title(f'{var_latex} = {np.round(frame,2)}')
+        # plt.xlim([lmin, lmax])  # doesn't work as of yet
         return ln,
 
     movie = fa(fig, update, frames=paramrange, init_func=init, blit=False)
@@ -51,11 +52,11 @@ def animate_sweep(lmin, lmax, params, sweepvar, paramrange):
 
 
 # arr = [om_m=0.3, om_b=0.04, h=0.7] just leave out the parameter you would like to sweep
-LCDM = [0.04, 0.7]
-var_range = np.linspace(0.1, 0.5, 20)
+# LCDM = [0.3, 0.04]
+# var_range = np.linspace(0.6, 0.7, 21)
 # simulation parameters
-minl = 160
-maxl = 1400
+# minl = 160
+# maxl = 1400
 
 # animate for sweeping om_m
-animate_sweep(minl, maxl, LCDM, 'om_m',  var_range)
+# animate_sweep(minl, maxl, LCDM, 'h',  var_range)
