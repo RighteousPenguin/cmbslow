@@ -3,8 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation as fa
 
 
-def animate_sweep(l, params, sweepvar, paramrange, lmin=180, lmax=1200):
-
+def animate_sweep(lmin, lmax, params, sweepvar, paramrange):
     if sweepvar == 'om_m':
         om_b, h = params
         var_latex = '$\Omega_m$'
@@ -18,6 +17,7 @@ def animate_sweep(l, params, sweepvar, paramrange, lmin=180, lmax=1200):
         print('Invalid sweep variable! Please choose either om_m, om_b, or h.')
         return None
 
+    l = np.linspace(minl, maxl, lmax - lmin + 1)
     fig, ax = plt.subplots()
     ln, = plt.plot([], [])
     # ln2, = plt.plot([], [])  # add option sep_cont
@@ -27,8 +27,8 @@ def animate_sweep(l, params, sweepvar, paramrange, lmin=180, lmax=1200):
         ax.set_xlim(lmin, lmax)
         ax.set_ylim(-2, 8)
         ax.grid()
-        ax.set_xlabel('$l$')
-        ax.set_ylabel('$C_l$')
+        ax.set_xlabel('$\ell$')
+        ax.set_ylabel('$C_\ell$')
         return ln,
 
     def update(frame):
@@ -54,9 +54,8 @@ def animate_sweep(l, params, sweepvar, paramrange, lmin=180, lmax=1200):
 LCDM = [0.04, 0.7]
 var_range = np.linspace(0.1, 0.5, 20)
 # simulation parameters
-lmin = 160
-lmax = 1400
-ls = np.linspace(lmin, lmax, lmax-lmin+1)
+minl = 160
+maxl = 1400
 
 # animate for sweeping om_m
-animate_sweep(ls, LCDM, 'om_m',  var_range, lmin=lmin, lmax=lmax)
+animate_sweep(minl, maxl, LCDM, 'om_m',  var_range)
