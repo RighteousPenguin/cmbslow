@@ -52,11 +52,11 @@ def animate_sweep(lmin, lmax, params, sweepvar, paramrange):
 
 
 # arr = [om_m=0.3, om_b=0.04, h=0.7] just leave out the parameter you would like to sweep
-# LCDM = [0.3, 0.04]
-# var_range = np.linspace(0.6, 0.7, 21)
+LCDM = [0.3, 0.04]
+var_range = np.linspace(0.6, 0.7, 21)
 # simulation parameters
-# minl = 160
-# maxl = 1400
+minl = 160
+maxl = 1400
 
 # animate for sweeping om_m
-# animate_sweep(minl, maxl, LCDM, 'h',  var_range)
+animate_sweep(minl, maxl, LCDM, 'h',  var_range)
